@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "qode media internal ai"
+version = "0.1.0"
+description = "Different Open Ai Assistant for Qodemedia"
+authors = ["bikin <bikin@qodemedia.net>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.10, <=3.13"
+Django = "5.0"
+openai = "^1.55.0"
+langchain = "^0.3.8"
+langchain-openai = "^0.2.9"
+python-dotenv = "^1.0.1"
+langsmith = "^0.1.145"
+psycopg2-binary = "^2.9.10"
+djangorestframework = "^3.15.2"
+drf-yasg = "^1.21.8"
+django-cors-headers = "^4.6.0"
+django-ace = "^1.36.2"
+django-allauth = "^65.2.0"
+drf-nested-routers = "^0.94.1"
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.10.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta name="description" content="Email">
+        <meta name="keywords" content="email">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{{ subject }}</title>
+    </head>
+    <body>
+        {% autoescape on %}
+            <div>{{ message }}</div>
+        {% endautoescape %}
+    </body>
+</html>
