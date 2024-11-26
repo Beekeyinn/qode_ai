@@ -31,7 +31,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "test")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG", "True") == "True"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
 
 
 # Application definition
@@ -66,6 +66,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + CUSTOM_APPS
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -86,7 +87,7 @@ ROOT_URLCONF = "base.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -95,6 +96,9 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
+            "libraries": {
+                "vite_tags": "apps.home.templatetags.frontend",
+            },
         },
     },
 ]
@@ -158,13 +162,19 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "assets"
+STATICFILES_DIRS = [BASE_DIR / "static"]
+
+
+MEDIA_URL = "media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-VITE_APP_DIR = BASE_DIR / "static/react/"
+VITE_APP_DIR = BASE_DIR / "static/reactUI/"
 
 INTERNAL_IPS = ["127.0.0.1"]
 
@@ -201,3 +211,5 @@ EMAIL_PORT = os.environ.get("EMAIL_PORT", 587)
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL_HOST = os.environ.get("DEFAULT_FROM_EMAIL_HOST")
+
+TEST_PRODUCTION = os.environ.get("TEST_PRODUCTION", "False") == "True"

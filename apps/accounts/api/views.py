@@ -6,8 +6,13 @@ from rest_framework.response import Response
 from apps.accounts.api.serializers import UserSerializer
 from apps.accounts.models import User
 
+from apps.core.mixins import ResponseMixin
+from apps.core.decorator import api_exception_handler
 
-class IdentityView(GenericAPIView):
+from django.utils.decorators import method_decorator
+
+
+class IdentityView(GenericAPIView, ResponseMixin):
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
 
@@ -16,6 +21,7 @@ class IdentityView(GenericAPIView):
             return self.request.user
         return []
 
+    @method_decorator(api_exception_handler)
     def get(self, request, *args, **kwargs):
         serializer = self.get_serializer(self.get_queryset())
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return self.return_response(serializer.data, status=status.HTTP_200_OK)

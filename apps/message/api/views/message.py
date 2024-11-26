@@ -1,8 +1,11 @@
 from django.utils.decorators import method_decorator
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import GenericViewSet
+from rest_framework.mixins import (
+    ListModelMixin,
+    CreateModelMixin,
+)
 
 from apps.assistants.models import Assistant
 from apps.core.decorator import api_exception_handler
@@ -10,9 +13,16 @@ from apps.core.permissions import IsOwnerOrReadOnly
 from apps.message.api.serializers import MessageCreateSerializer, MessageSerializer
 from apps.message.models import Message
 from apps.message.views import AssistantMessageView
+from apps.core.mixins import ResponseMixin
 
 
-class MessageViewSet(AssistantMessageView, ModelViewSet):
+class MessageViewSet(
+    AssistantMessageView,
+    ListModelMixin,
+    CreateModelMixin,
+    GenericViewSet,
+    ResponseMixin,
+):
     serializer_class = MessageSerializer
     permission_classes = [IsOwnerOrReadOnly]
     http_method_names = ["get", "post", "head"]
@@ -42,16 +52,18 @@ class MessageViewSet(AssistantMessageView, ModelViewSet):
         is_function, response = aiassistant.check_if_function()
         response = self.check_function_or_not(is_function, response)
         if response:
-            return response
-        return Response("test", status=200)
+            return self.formatted_response(response)
+        return self.return_response(
+            {"message": "Message created successfully"}, status=201
+        )
 
     @method_decorator(api_exception_handler)
     def list(self, request, *args, **kwargs):
         """List all messages on the given thread of given assistant."""
-        return super().list(request, *args, **kwargs)
+        return self.formatted_response(super().list(request, *args, **kwargs))
 
 
-class MessageCreateApiView(AssistantMessageView, GenericAPIView):
+class MessageCreateApiView(AssistantMessageView, GenericAPIView, ResponseMixin):
     permission_classes = [IsAuthenticated]
     serializer_class = MessageCreateSerializer
     http_method_names = ["post"]
@@ -73,4 +85,4 @@ class MessageCreateApiView(AssistantMessageView, GenericAPIView):
         is_function, response = aiassistant.check_if_function()
         response = self.check_function_or_not(is_function, response)
         response.data["thread"] = self.thread.id
-        return response
+        return self.formatted_response(response)

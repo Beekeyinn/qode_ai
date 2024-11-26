@@ -20,6 +20,7 @@ django-cors-headers = "^4.6.0"
 django-ace = "^1.36.2"
 django-allauth = "^65.2.0"
 drf-nested-routers = "^0.94.1"
+whitenoise = "^6.8.2"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.10.0"

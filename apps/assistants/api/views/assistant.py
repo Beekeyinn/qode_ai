@@ -13,9 +13,12 @@ from apps.core.views import MultiSerializerViewSetMixin
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
+from apps.core.decorator import api_exception_handler
+from apps.core.mixins import ResponseMixin
+from django.utils.decorators import method_decorator
 
 
-class AssistantModelViewSet(MultiSerializerViewSetMixin, ModelViewSet):
+class AssistantModelViewSet(MultiSerializerViewSetMixin, ResponseMixin, ModelViewSet):
     permission_classes = [IsOwnerOrReadOnly]
     serializer_class = AssistantModelSerializer
     parser_classes = [MultiPartParser, FormParser]
@@ -42,4 +45,24 @@ class AssistantModelViewSet(MultiSerializerViewSetMixin, ModelViewSet):
         files = serializer.save()
         vector_store: AssistantVectorStore = assistant.vector_stores
         vector_store.files.add([file.id for file in files])
-        return Response({"created": True}, status=status.HTTP_201_CREATED)
+        return self.return_response({"created": True}, status=status.HTTP_201_CREATED)
+
+    @method_decorator(api_exception_handler)
+    def create(self, request, *args, **kwargs):
+        return self.formatted_response(super().create(request, *args, **kwargs))
+
+    @method_decorator(api_exception_handler)
+    def update(self, request, *args, **kwargs):
+        return self.formatted_response(super().update(request, *args, **kwargs))
+
+    @method_decorator(api_exception_handler)
+    def destroy(self, request, *args, **kwargs):
+        return self.formatted_response(super().destroy(request, *args, **kwargs))
+
+    @method_decorator(api_exception_handler)
+    def retrieve(self, request, *args, **kwargs):
+        return self.formatted_response(super().retrieve(request, *args, **kwargs))
+
+    @method_decorator(api_exception_handler)
+    def list(self, request, *args, **kwargs):
+        return self.formatted_response(super().list(request, *args, **kwargs))
